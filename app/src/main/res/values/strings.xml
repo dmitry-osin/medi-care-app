@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Medicare</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">План приема</string>
+    <string name="nav_medicines">Мои лекарства</string>
+    <string name="nav_reminders">Мои напоминания</string>
+    <string name="nav_settings">Настройки</string>
+    <string name="nav_about">О приложении</string>
+    
+    <!-- Home Screen -->
+    <string name="home_title">План приема</string>
+    <string name="home_no_medicines">Нет лекарств на сегодня</string>
+    <string name="home_add_medicine">Добавить лекарство</string>
+    <string name="home_add_reminder">Добавить напоминание</string>
+    <string name="home_add_hint">Нажмите кнопку + чтобы добавить лекарство</string>
+    <string name="home_today">Сегодня</string>
+    <string name="home_tomorrow">Завтра</string>
+    <string name="home_no_reminders">Нет напоминаний</string>
+    
+    <!-- Medicine -->
+    <string name="medicine_name">Название</string>
+    <string name="medicine_description">Описание</string>
+    <string name="medicine_type">Тип препарата</string>
+    <string name="medicine_dosage">Дозировка</string>
+    <string name="medicine_quantity">Количество</string>
+    <string name="medicine_start_date">Дата начала</string>
+    <string name="medicine_end_date">Дата окончания</string>
+    <string name="medicine_color">Цвет</string>
+    <string name="medicine_active">Активно</string>
+    <string name="medicine_new">Лекарство</string>
+    <string name="medicine_edit">Лекарство</string>
+    <string name="medicine_delete">Удалить</string>
+    <string name="medicine_delete_confirmation">Удалить лекарство?</string>
+    <string name="medicine_delete_message">Это действие нельзя отменить</string>
+    <string name="medicines_no_medicines">Нет лекарств</string>
+    <string name="medicines_add_hint">Нажмите кнопку + чтобы добавить лекарство</string>
+    
+    <!-- Reminder -->
+    <string name="reminder_medicine">Лекарство</string>
+    <string name="reminder_time">Время</string>
+    <string name="reminder_days">Дни недели</string>
+    <string name="reminder_active">Активно</string>
+    <string name="reminder_new">Напоминание</string>
+    <string name="reminder_edit">Напоминание</string>
+    <string name="reminder_delete">Удалить</string>
+    <string name="reminder_delete_confirmation">Удалить напоминание?</string>
+    <string name="reminder_max_count_error">Максимум 5 напоминаний в день для одного лекарства</string>
+    <string name="reminder_no_days_error">Выберите хотя бы один день недели</string>
+    <string name="reminder_medicine_inactive_error">Нельзя активировать напоминание для неактивного лекарства</string>
+    
+    <!-- Days of week -->
+    <string name="day_monday">Понедельник</string>
+    <string name="day_tuesday">Вторник</string>
+    <string name="day_wednesday">Среда</string>
+    <string name="day_thursday">Четверг</string>
+    <string name="day_friday">Пятница</string>
+    <string name="day_saturday">Суббота</string>
+    <string name="day_sunday">Воскресенье</string>
+    
+    <!-- Medicine Types -->
+    <string name="medicine_type_tablet">Таблетка</string>
+    <string name="medicine_type_drops">Капли</string>
+    <string name="medicine_type_capsule">Капсула</string>
+    <string name="medicine_type_suppository">Свечка</string>
+    <string name="medicine_type_syrup">Сироп</string>
+    <string name="medicine_type_ointment">Мазь</string>
+    <string name="medicine_type_injection">Инъекция</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Настройки</string>
+    <string name="settings_language">Язык</string>
+    <string name="settings_language_russian">Русский</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_theme">Тема</string>
+    <string name="settings_theme_light">Светлая</string>
+    <string name="settings_theme_dark">Темная</string>
+    <string name="settings_theme_system">Системная</string>
+    
+    <!-- About -->
+    <string name="about_title">О приложении</string>
+    <string name="about_app_name">Medicare</string>
+    <string name="about_version">Версия</string>
+    <string name="about_author">Автор</string>
+    <string name="about_author_name">Dmitry Osin</string>
+    <string name="about_email">Email</string>
+    <string name="about_email_value">d@osin.pro</string>
+    <string name="about_website">Сайт</string>
+    <string name="about_website_value">osin.pro/medicare</string>
+    
+    <!-- Common -->
+    <string name="save">Сохранить</string>
+    <string name="cancel">Отмена</string>
+    <string name="apply">Применить</string>
+    <string name="edit">Редактировать</string>
+    <string name="delete">Удалить</string>
+    <string name="yes">Да</string>
+    <string name="no">Нет</string>
+    <string name="required_field">Обязательное поле</string>
+    <string name="invalid_date">Дата окончания должна быть после даты начала</string>
+    <string name="time_to_take">Время приема</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_name">Напоминания о лекарствах</string>
+    <string name="notification_channel_description">Уведомления о необходимости принять лекарство</string>
+    <string name="notification_title">Время принять лекарство</string>
+    <string name="notification_text">%1$s - %2$s (%3$s)</string>
+    
+    <!-- Reminders List -->
+    <string name="reminders_no_reminders">Нет напоминаний</string>
+    <string name="reminders_add_hint">Нажмите кнопку +, чтобы добавить напоминание</string>
+    <string name="reminders_no_medicines_error">Сначала добавьте лекарство</string>
+</resources>

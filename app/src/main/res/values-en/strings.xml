@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Medicare</string>
+    
+    <!-- Navigation -->
+    <string name="nav_home">Treatment Plan</string>
+    <string name="nav_medicines">My Medicines</string>
+    <string name="nav_reminders">My Reminders</string>
+    <string name="nav_settings">Settings</string>
+    <string name="nav_about">About App</string>
+    
+    <!-- Home Screen -->
+    <string name="home_title">Treatment Plan</string>
+    <string name="home_no_medicines">No medicines for today</string>
+    <string name="home_add_medicine">Add Medicine</string>
+    <string name="home_add_reminder">Add Reminder</string>
+    <string name="home_add_hint">Press the + button to add a medicine</string>
+    <string name="home_today">Today</string>
+    <string name="home_tomorrow">Tomorrow</string>
+    <string name="home_no_reminders">No reminders</string>
+    
+    <!-- Medicine -->
+    <string name="medicine_name">Name</string>
+    <string name="medicine_description">Description</string>
+    <string name="medicine_type">Type</string>
+    <string name="medicine_dosage">Dosage</string>
+    <string name="medicine_quantity">Quantity</string>
+    <string name="medicine_start_date">Start Date</string>
+    <string name="medicine_end_date">End Date</string>
+    <string name="medicine_color">Color</string>
+    <string name="medicine_active">Active</string>
+    <string name="medicine_new">Medicine</string>
+    <string name="medicine_edit">Medicine</string>
+    <string name="medicine_delete">Delete</string>
+    <string name="medicine_delete_confirmation">Delete medicine?</string>
+    <string name="medicine_delete_message">This action cannot be undone</string>
+    <string name="medicines_no_medicines">No medicines</string>
+    <string name="medicines_add_hint">Press the + button to add a medicine</string>
+    
+    <!-- Reminder -->
+    <string name="reminder_medicine">Medicine</string>
+    <string name="reminder_time">Time</string>
+    <string name="reminder_days">Days of Week</string>
+    <string name="reminder_active">Active</string>
+    <string name="reminder_new">Reminder</string>
+    <string name="reminder_edit">Reminder</string>
+    <string name="reminder_delete">Delete</string>
+    <string name="reminder_delete_confirmation">Delete reminder?</string>
+    <string name="reminder_max_count_error">Maximum 5 reminders per day for one medicine</string>
+    <string name="reminder_no_days_error">Select at least one day of week</string>
+    <string name="reminder_medicine_inactive_error">Cannot activate reminder for inactive medicine</string>
+    
+    <!-- Days of week -->
+    <string name="day_monday">Monday</string>
+    <string name="day_tuesday">Tuesday</string>
+    <string name="day_wednesday">Wednesday</string>
+    <string name="day_thursday">Thursday</string>
+    <string name="day_friday">Friday</string>
+    <string name="day_saturday">Saturday</string>
+    <string name="day_sunday">Sunday</string>
+    
+    <!-- Medicine Types -->
+    <string name="medicine_type_tablet">Tablet</string>
+    <string name="medicine_type_drops">Drops</string>
+    <string name="medicine_type_capsule">Capsule</string>
+    <string name="medicine_type_suppository">Suppository</string>
+    <string name="medicine_type_syrup">Syrup</string>
+    <string name="medicine_type_ointment">Ointment</string>
+    <string name="medicine_type_injection">Injection</string>
+    
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_language">Language</string>
+    <string name="settings_language_russian">Russian</string>
+    <string name="settings_language_english">English</string>
+    <string name="settings_theme">Theme</string>
+    <string name="settings_theme_light">Light</string>
+    <string name="settings_theme_dark">Dark</string>
+    <string name="settings_theme_system">System</string>
+    
+    <!-- About -->
+    <string name="about_title">About App</string>
+    <string name="about_app_name">Medicare</string>
+    <string name="about_version">Version</string>
+    <string name="about_author">Author</string>
+    <string name="about_author_name">Dmitry Osin</string>
+    <string name="about_email">Email</string>
+    <string name="about_email_value">d@osin.pro</string>
+    <string name="about_website">Website</string>
+    <string name="about_website_value">osin.pro/medicare</string>
+    
+    <!-- Common -->
+    <string name="save">Save</string>
+    <string name="cancel">Cancel</string>
+    <string name="apply">Apply</string>
+    <string name="edit">Edit</string>
+    <string name="delete">Delete</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="required_field">Required field</string>
+    <string name="invalid_date">End date must be after start date</string>
+    <string name="time_to_take">Time to take</string>
+    
+    <!-- Notifications -->
+    <string name="notification_channel_name">Medicine Reminders</string>
+    <string name="notification_channel_description">Notifications about taking medicine</string>
+    <string name="notification_title">Time to take medicine</string>
+    <string name="notification_text">%1$s - %2$s (%3$s)</string>
+    
+    <!-- Reminders List -->
+    <string name="reminders_no_reminders">No reminders</string>
+    <string name="reminders_add_hint">Press the + button to add a reminder</string>
+    <string name="reminders_no_medicines_error">Add a medicine first</string>
+</resources>
+
