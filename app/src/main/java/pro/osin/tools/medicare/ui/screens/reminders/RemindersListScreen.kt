@@ -32,9 +32,11 @@ import pro.osin.tools.medicare.ui.navigation.Screen
 @Composable
 fun RemindersListScreen(navController: NavController) {
     val context = LocalContext.current
-    val database = MedicineDatabase.getDatabase(context)
-    val reminderRepository = ReminderRepository(database.reminderDao(), context)
-    val medicineRepository = MedicineRepository(database.medicineDao())
+    
+    // Cache database and repositories to avoid recreating on recomposition
+    val database = remember { MedicineDatabase.getDatabase(context.applicationContext) }
+    val reminderRepository = remember { ReminderRepository(database.reminderDao(), context.applicationContext) }
+    val medicineRepository = remember { MedicineRepository(database.medicineDao()) }
     val scope = rememberCoroutineScope()
     
     val reminders = reminderRepository.getAllReminders().collectAsState(initial = emptyList())

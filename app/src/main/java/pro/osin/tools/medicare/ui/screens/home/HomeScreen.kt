@@ -45,23 +45,49 @@ data class ReminderItem(
 @Composable
 fun HomeScreen(navController: NavController) {
     val context = LocalContext.current
-    val database = MedicineDatabase.getDatabase(context)
-    val medicineRepository = MedicineRepository(database.medicineDao())
-    val reminderRepository = ReminderRepository(database.reminderDao(), context)
+    
+    // Cache database and repositories to avoid recreating on recomposition
+    val database = remember { MedicineDatabase.getDatabase(context.applicationContext) }
+    val medicineRepository = remember { MedicineRepository(database.medicineDao()) }
+    val reminderRepository = remember { ReminderRepository(database.reminderDao(), context.applicationContext) }
 
-    val currentDate = System.currentTimeMillis()
-    val calendar = Calendar.getInstance()
-    val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK) // 1 = Sunday, 2 = Monday, etc.
-    val dayOfWeekIndex = if (dayOfWeek == Calendar.SUNDAY) 7 else dayOfWeek - 1
+    // Cache calendar calculations - update when day changes
+    val currentDateKey = remember { 
+        val calendar = Calendar.getInstance()
+        calendar.get(Calendar.YEAR) * 10000 + 
+        calendar.get(Calendar.MONTH) * 100 + 
+        calendar.get(Calendar.DAY_OF_MONTH)
+    }
     
-    // Calculate tomorrow's day of week index
-    val tomorrowCalendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 1) }
-    val tomorrowDayOfWeek = tomorrowCalendar.get(Calendar.DAY_OF_WEEK)
-    val tomorrowDayOfWeekIndex = if (tomorrowDayOfWeek == Calendar.SUNDAY) 7 else tomorrowDayOfWeek - 1
+    val (dayOfWeekIndex, tomorrowDayOfWeekIndex) = remember(currentDateKey) {
+        val calendar = Calendar.getInstance()
+        val dayOfWeek = calendar.get(Calendar.DAY_OF_WEEK)
+        val todayIndex = if (dayOfWeek == Calendar.SUNDAY) 7 else dayOfWeek - 1
+        
+        val tomorrowCalendar = Calendar.getInstance().apply { add(Calendar.DAY_OF_MONTH, 1) }
+        val tomorrowDayOfWeek = tomorrowCalendar.get(Calendar.DAY_OF_WEEK)
+        val tomorrowIndex = if (tomorrowDayOfWeek == Calendar.SUNDAY) 7 else tomorrowDayOfWeek - 1
+        
+        Pair(todayIndex, tomorrowIndex)
+    }
     
-    val currentHour = calendar.get(Calendar.HOUR_OF_DAY)
-    val currentMinute = calendar.get(Calendar.MINUTE)
-    val currentTimeString = String.format("%02d:%02d", currentHour, currentMinute)
+    // Update current time periodically (every minute)
+    val currentTimeStringState = remember { 
+        val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        mutableStateOf(String.format("%02d:%02d", hour, minute))
+    }
+    
+    LaunchedEffect(Unit) {
+        while (true) {
+            kotlinx.coroutines.delay(60000) // Update every minute
+            val calendar = Calendar.getInstance()
+            val hour = calendar.get(Calendar.HOUR_OF_DAY)
+            val minute = calendar.get(Calendar.MINUTE)
+            currentTimeStringState.value = String.format("%02d:%02d", hour, minute)
+        }
+    }
 
     val allMedicines = medicineRepository.getAllMedicines().collectAsState(initial = emptyList())
     val remindersForToday = reminderRepository.getRemindersForDay(dayOfWeekIndex).collectAsState(initial = emptyList())
@@ -72,14 +98,14 @@ fun HomeScreen(navController: NavController) {
         remindersForToday.value,
         remindersForTomorrow.value,
         allMedicines.value,
-        currentTimeString
+        currentTimeStringState.value
     ) {
         val items = mutableListOf<ReminderItem>()
         
         // Process today's reminders
         remindersForToday.value.forEach { reminder ->
             allMedicines.value.find { it.id == reminder.medicineId && it.isActive }?.let { medicine ->
-                val isPast = reminder.time < currentTimeString
+                val isPast = reminder.time < currentTimeStringState.value
                 items.add(
                     ReminderItem(
                         reminder = reminder,

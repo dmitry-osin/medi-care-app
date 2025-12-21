@@ -38,8 +38,10 @@ import java.util.*
 @Composable
 fun MedicineFormScreen(navController: NavController, medicineId: Long?) {
     val context = LocalContext.current
-    val database = MedicineDatabase.getDatabase(context)
-    val medicineRepository = MedicineRepository(database.medicineDao())
+    
+    // Cache database and repository to avoid recreating on recomposition
+    val database = remember { MedicineDatabase.getDatabase(context.applicationContext) }
+    val medicineRepository = remember { MedicineRepository(database.medicineDao()) }
     val scope = rememberCoroutineScope()
 
     var medicine by remember { mutableStateOf<Medicine?>(null) }

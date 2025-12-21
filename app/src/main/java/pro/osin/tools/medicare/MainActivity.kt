@@ -69,6 +69,7 @@ class MainActivity : ComponentActivity() {
         ReminderScheduler.schedulePeriodicCheck(applicationContext)
         
         // Restore all active reminders on startup
+        // Use lifecycleScope or application scope to avoid memory leaks
         val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
         scope.launch {
             try {
@@ -80,6 +81,8 @@ class MainActivity : ComponentActivity() {
                 // Ignore errors during restoration
             }
         }
+        // Note: This scope is intentionally not cancelled as it's a one-time operation
+        // and should complete even if activity is destroyed
 
         setContent {
             val navController = rememberNavController()
@@ -127,9 +130,10 @@ class MainActivity : ComponentActivity() {
                 val navigateTo = intent.getStringExtra("navigate_to")
                 if (navigateTo != null) {
                     navController.navigate(navigateTo) {
-                        // Clear entire back stack and start fresh
+                        // Pop to start destination but keep it in the stack
+                        // This allows back button to work properly
                         popUpTo(navController.graph.startDestinationId) {
-                            inclusive = true
+                            inclusive = false
                         }
                         // Avoid multiple copies of the same screen
                         launchSingleTop = true

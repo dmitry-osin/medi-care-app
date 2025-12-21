@@ -11,6 +11,9 @@ class ReminderRepository(
     private val reminderDao: ReminderDao,
     private val context: Context? = null
 ) {
+    // Use applicationContext to avoid memory leaks
+    private val applicationContext: Context?
+        get() = context?.applicationContext
     fun getAllActiveReminders(): Flow<List<Reminder>> = reminderDao.getAllActiveReminders()
 
     fun getAllReminders(): Flow<List<Reminder>> = reminderDao.getAllReminders()
@@ -25,7 +28,7 @@ class ReminderRepository(
 
     suspend fun insertReminder(reminder: Reminder): Long {
         val id = reminderDao.insertReminder(reminder)
-        context?.let {
+        applicationContext?.let {
             if (reminder.isActive) {
                 ReminderScheduler.scheduleReminder(it, reminder.copy(id = id))
             }
@@ -35,7 +38,7 @@ class ReminderRepository(
 
     suspend fun updateReminder(reminder: Reminder) {
         reminderDao.updateReminder(reminder)
-        context?.let {
+        applicationContext?.let {
             if (reminder.isActive) {
                 ReminderScheduler.scheduleReminder(it, reminder)
             } else {
@@ -46,7 +49,7 @@ class ReminderRepository(
     }
 
     suspend fun deleteReminder(reminder: Reminder) {
-        context?.let {
+        applicationContext?.let {
             ReminderScheduler.cancelReminder(it, reminder.id)
         }
         reminderDao.deleteReminder(reminder)
@@ -60,7 +63,7 @@ class ReminderRepository(
 
     suspend fun deactivateRemindersForMedicine(medicineId: Long) {
         reminderDao.deactivateRemindersForMedicine(medicineId)
-        context?.let {
+        applicationContext?.let {
             // Cancel notifications for all deactivated reminders
             val reminders = getRemindersForMedicine(medicineId).first()
             reminders.forEach { reminder ->

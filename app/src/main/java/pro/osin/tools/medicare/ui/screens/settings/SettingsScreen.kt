@@ -23,7 +23,9 @@ import pro.osin.tools.medicare.util.PreferencesManager
 @Composable
 fun SettingsScreen(navController: NavController) {
     val context = LocalContext.current
-    val preferencesManager = PreferencesManager(context)
+    
+    // Cache PreferencesManager to avoid recreating on recomposition
+    val preferencesManager = remember { PreferencesManager(context.applicationContext) }
     val scope = rememberCoroutineScope()
     
     val language by preferencesManager.language.collectAsState(initial = PreferencesManager.LANGUAGE_RU)
