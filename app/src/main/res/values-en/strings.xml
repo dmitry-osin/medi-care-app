@@ -106,6 +106,7 @@
     <string name="notification_channel_description">Notifications about taking medicine</string>
     <string name="notification_title">Time to take medicine</string>
     <string name="notification_text">%1$s - %2$s (%3$s)</string>
+    <string name="notification_content_text">Time to take %1$s</string>
     
     <!-- Reminders List -->
     <string name="reminders_no_reminders">No reminders</string>

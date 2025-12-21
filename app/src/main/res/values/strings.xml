@@ -106,6 +106,7 @@
     <string name="notification_channel_description">Уведомления о необходимости принять лекарство</string>
     <string name="notification_title">Время принять лекарство</string>
     <string name="notification_text">%1$s - %2$s (%3$s)</string>
+    <string name="notification_content_text">Время принять %1$s</string>
     
     <!-- Reminders List -->
     <string name="reminders_no_reminders">Нет напоминаний</string>
