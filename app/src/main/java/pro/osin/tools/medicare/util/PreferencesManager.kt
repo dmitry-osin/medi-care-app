@@ -16,6 +16,7 @@ class PreferencesManager(private val context: Context) {
     companion object {
         private val LANGUAGE_KEY = stringPreferencesKey("language")
         private val THEME_KEY = stringPreferencesKey("theme")
+        private val BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY = booleanPreferencesKey("battery_optimization_dialog_shown")
         
         const val LANGUAGE_RU = "ru"
         const val LANGUAGE_EN = "en"
@@ -33,6 +34,10 @@ class PreferencesManager(private val context: Context) {
         preferences[THEME_KEY] ?: THEME_SYSTEM
     }
 
+    val batteryOptimizationDialogShown: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY] ?: false
+    }
+
     suspend fun setLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
@@ -42,6 +47,12 @@ class PreferencesManager(private val context: Context) {
     suspend fun setTheme(theme: String) {
         context.dataStore.edit { preferences ->
             preferences[THEME_KEY] = theme
+        }
+    }
+
+    suspend fun setBatteryOptimizationDialogShown(shown: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY] = shown
         }
     }
 }

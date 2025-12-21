@@ -14,7 +14,7 @@
     <string name="home_no_medicines">No medicines for today</string>
     <string name="home_add_medicine">Add Medicine</string>
     <string name="home_add_reminder">Add Reminder</string>
-    <string name="home_add_hint">Press the + button to add a medicine</string>
+    <string name="home_add_hint">Press the + button to start</string>
     <string name="home_today">Today</string>
     <string name="home_tomorrow">Tomorrow</string>
     <string name="home_no_reminders">No reminders</string>
@@ -112,5 +112,15 @@
     <string name="reminders_no_reminders">No reminders</string>
     <string name="reminders_add_hint">Press the + button to add a reminder</string>
     <string name="reminders_no_medicines_error">Add a medicine first</string>
+    
+    <!-- DND Permission -->
+    <string name="dnd_permission_title">Notification Permission</string>
+    <string name="dnd_permission_message">To ensure reminders work correctly, you need to grant access to notification settings.\n\nAfter opening the settings screen:\n1. Find Medicare in the app list\n2. Enable the toggle to allow notifications</string>
+    <string name="dnd_permission_continue">Continue</string>
+    
+    <!-- Battery Optimization -->
+    <string name="battery_optimization_title">Battery Optimization</string>
+    <string name="battery_optimization_message">For reminders to work correctly, you need to add the app to all battery optimization manager exclusions and allow background work.\n\nThis is a required condition for the app to work. Without this, notifications will not be received.\n\nIn addition to Android system settings, also check battery optimization managers from your device manufacturer (Samsung, Huawei, Honor, Xiaomi, and others).\n\nAfter opening the settings screen:\n1. Find Medicare in the app list\n2. Select \"Don\'t optimize\" or \"Not restricted\"\n3. Also check settings in the battery optimization manager from your device manufacturer</string>
+    <string name="battery_optimization_continue">Continue</string>
 </resources>
 

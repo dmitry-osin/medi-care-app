@@ -14,7 +14,7 @@
     <string name="home_no_medicines">Нет лекарств на сегодня</string>
     <string name="home_add_medicine">Добавить лекарство</string>
     <string name="home_add_reminder">Добавить напоминание</string>
-    <string name="home_add_hint">Нажмите кнопку + чтобы добавить лекарство</string>
+    <string name="home_add_hint">Нажмите кнопку + чтобы начать</string>
     <string name="home_today">Сегодня</string>
     <string name="home_tomorrow">Завтра</string>
     <string name="home_no_reminders">Нет напоминаний</string>
@@ -110,6 +110,16 @@
     
     <!-- Reminders List -->
     <string name="reminders_no_reminders">Нет напоминаний</string>
-    <string name="reminders_add_hint">Нажмите кнопку +, чтобы добавить напоминание</string>
+    <string name="reminders_add_hint">Нажмите кнопку + чтобы добавить напоминание</string>
     <string name="reminders_no_medicines_error">Сначала добавьте лекарство</string>
+    
+    <!-- DND Permission -->
+    <string name="dnd_permission_title">Разрешение на уведомления</string>
+    <string name="dnd_permission_message">Для корректной работы напоминаний необходимо предоставить доступ к настройкам уведомлений.\n\nПосле открытия экрана настроек:\n1. Найдите Medicare в списке приложений\n2. Включите переключатель для разрешения уведомлений</string>
+    <string name="dnd_permission_continue">Продолжить</string>
+    
+    <!-- Battery Optimization -->
+    <string name="battery_optimization_title">Оптимизация батареи</string>
+    <string name="battery_optimization_message">Для корректной работы напоминаний необходимо добавить приложение в исключения всех менеджеров оптимизации батареи и разрешить работу в фоне.\n\nЭто обязательное условие для работы приложения. Без этого уведомления не будут приходить.\n\nПомимо системных настроек Android, также проверьте менеджеры оптимизации от производителя вашего устройства (Samsung, Huawei, Honor, Xiaomi и другие).\n\nПосле открытия экрана настроек:\n1. Найдите Medicare в списке приложений\n2. Выберите «Не оптимизировать» или «Не ограничивать»\n3. Также проверьте настройки в менеджере оптимизации батареи от производителя</string>
+    <string name="battery_optimization_continue">Продолжить</string>
 </resources>

@@ -5,8 +5,10 @@ import android.app.NotificationManager
 import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
+import android.os.PowerManager
 import android.provider.Settings
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -14,13 +16,21 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.rememberNavController
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -28,6 +38,7 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import pro.osin.tools.medicare.R
 import pro.osin.tools.medicare.data.database.MedicineDatabase
 import pro.osin.tools.medicare.data.repository.MedicineRepository
 import pro.osin.tools.medicare.data.repository.ReminderRepository
@@ -37,6 +48,7 @@ import pro.osin.tools.medicare.util.LocaleHelper
 import pro.osin.tools.medicare.util.NotificationHelper
 import pro.osin.tools.medicare.util.PreferencesManager
 import pro.osin.tools.medicare.util.ReminderScheduler
+import androidx.core.net.toUri
 
 class MainActivity : ComponentActivity() {
     override fun attachBaseContext(newBase: Context?) {
@@ -91,6 +103,9 @@ class MainActivity : ComponentActivity() {
             // Get theme and language settings
             val theme by preferencesManager.theme.collectAsState(initial = PreferencesManager.THEME_SYSTEM)
             val language by preferencesManager.language.collectAsState(initial = PreferencesManager.LANGUAGE_RU)
+            val batteryOptimizationDialogShown by preferencesManager.batteryOptimizationDialogShown.collectAsState(initial = false)
+            
+            val scope = rememberCoroutineScope()
             
             // Check and request notification permission
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -99,11 +114,73 @@ class MainActivity : ComponentActivity() {
                 // Permission granted or denied - continue with app initialization
             }
             
+            // State for showing DND permission dialog
+            var showDndPermissionDialog by remember { mutableStateOf(false) }
+            // State to track if DND check is completed
+            var dndCheckCompleted by remember { mutableStateOf(false) }
+            // State for showing battery optimization dialog
+            var showBatteryOptimizationDialog by remember { mutableStateOf(false) }
+            
+            // Function to check battery optimization and show dialog only on first launch
+            // Always show dialog on first launch regardless of system battery optimization status,
+            // as device manufacturers (Samsung, Huawei, Honor, Xiaomi, etc.) have their own battery managers
+            val checkBatteryOptimization = {
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M && !batteryOptimizationDialogShown) {
+                    // Show dialog only if it hasn't been shown before
+                    showBatteryOptimizationDialog = true
+                    // Mark dialog as shown
+                    scope.launch {
+                        preferencesManager.setBatteryOptimizationDialogShown(true)
+                    }
+                }
+            }
+            
             // Check and request notification policy access (Do Not Disturb)
             val notificationPolicyLauncher = rememberLauncherForActivityResult(
                 contract = ActivityResultContracts.StartActivityForResult()
             ) {
-                // User returned from settings - continue with app initialization
+                // User returned from settings - mark DND check as completed
+                dndCheckCompleted = true
+                // Check battery optimization after returning from DND settings
+                checkBatteryOptimization()
+            }
+            
+            // Launcher for battery optimization settings
+            val batteryOptimizationLauncher = rememberLauncherForActivityResult(
+                contract = ActivityResultContracts.StartActivityForResult()
+            ) {
+                // User returned from battery optimization settings
+                // Dialog was already shown on first launch, no need to show again
+            }
+            
+            // Function to open DND settings
+            val openDndSettings = {
+                val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
+                notificationPolicyLauncher.launch(intent)
+            }
+            
+            // Function to open battery optimization settings
+            val openBatteryOptimizationSettings = {
+                val packageName = context.packageName
+                // Try to request permission directly (may not work on all devices)
+                try {
+                    val intent = Intent(Settings.ACTION_REQUEST_IGNORE_BATTERY_OPTIMIZATIONS).apply {
+                        data = "package:$packageName".toUri()
+                    }
+                    batteryOptimizationLauncher.launch(intent)
+                } catch (e: Exception) {
+                    // If direct request fails, open battery optimization settings page
+                    try {
+                        val intent = Intent(Settings.ACTION_IGNORE_BATTERY_OPTIMIZATION_SETTINGS)
+                        batteryOptimizationLauncher.launch(intent)
+                    } catch (e2: Exception) {
+                        // Fallback: open app info page where user can manage battery optimization
+                        val intent = Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS).apply {
+                            data = "package:$packageName".toUri()
+                        }
+                        batteryOptimizationLauncher.launch(intent)
+                    }
+                }
             }
             
             // Check notification permission on startup
@@ -121,10 +198,17 @@ class MainActivity : ComponentActivity() {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                     val hasPolicyAccess = notificationManager.isNotificationPolicyAccessGranted
                     if (!hasPolicyAccess) {
-                        val intent = Intent(Settings.ACTION_NOTIFICATION_POLICY_ACCESS_SETTINGS)
-                        notificationPolicyLauncher.launch(intent)
+                        // Show dialog first, then open settings
+                        showDndPermissionDialog = true
+                        // Don't check battery optimization yet - wait for DND to complete
+                        return@LaunchedEffect
                     }
                 }
+                // If DND access is already granted, mark as completed
+                dndCheckCompleted = true
+                
+                // Check battery optimization immediately if DND is already set up
+                checkBatteryOptimization()
                 
                 // Navigate to settings screen after restart
                 val navigateTo = intent.getStringExtra("navigate_to")
@@ -141,6 +225,7 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
+            
             val isDarkTheme = when (theme) {
                 PreferencesManager.THEME_DARK -> true
                 PreferencesManager.THEME_LIGHT -> false
@@ -153,6 +238,62 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.background
                 ) {
                     NavGraph(navController = navController)
+                }
+                
+                // DND Permission Dialog
+                if (showDndPermissionDialog) {
+                    AlertDialog(
+                        onDismissRequest = { 
+                            showDndPermissionDialog = false
+                            // If user dismisses dialog, mark DND check as completed to proceed with battery check
+                            dndCheckCompleted = true
+                        },
+                        title = { Text(stringResource(R.string.dnd_permission_title)) },
+                        text = { Text(stringResource(R.string.dnd_permission_message)) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDndPermissionDialog = false
+                                    openDndSettings()
+                                }
+                            ) {
+                                Text(stringResource(R.string.dnd_permission_continue))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { 
+                                showDndPermissionDialog = false
+                                // If user dismisses dialog, mark DND check as completed to proceed with battery check
+                                dndCheckCompleted = true
+                            }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        }
+                    )
+                }
+                
+                // Battery Optimization Dialog
+                if (showBatteryOptimizationDialog) {
+                    AlertDialog(
+                        onDismissRequest = { showBatteryOptimizationDialog = false },
+                        title = { Text(stringResource(R.string.battery_optimization_title)) },
+                        text = { Text(stringResource(R.string.battery_optimization_message)) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showBatteryOptimizationDialog = false
+                                    openBatteryOptimizationSettings()
+                                }
+                            ) {
+                                Text(stringResource(R.string.battery_optimization_continue))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(onClick = { showBatteryOptimizationDialog = false }) {
+                                Text(stringResource(R.string.cancel))
+                            }
+                        }
+                    )
                 }
             }
         }

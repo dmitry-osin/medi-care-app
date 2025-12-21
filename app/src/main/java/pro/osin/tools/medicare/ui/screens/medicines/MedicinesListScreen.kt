@@ -169,8 +169,8 @@ fun MedicineListItem(
                     Box(
                         modifier = Modifier
                             .size(24.dp)
-                            .background(Color(medicine.color), CircleShape)
                             .padding(end = 12.dp)
+                            .background(Color(medicine.color), CircleShape)
                     )
                     Column {
                         Text(
