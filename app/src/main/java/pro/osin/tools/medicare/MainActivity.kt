@@ -104,8 +104,19 @@ class MainActivity : ComponentActivity() {
             val theme by preferencesManager.theme.collectAsState(initial = PreferencesManager.THEME_SYSTEM)
             val language by preferencesManager.language.collectAsState(initial = PreferencesManager.LANGUAGE_RU)
             val batteryOptimizationDialogShown by preferencesManager.batteryOptimizationDialogShown.collectAsState(initial = false)
+            val disclaimerAccepted by preferencesManager.disclaimerAccepted.collectAsState(initial = false)
             
             val scope = rememberCoroutineScope()
+            
+            // State for showing disclaimer dialog
+            var showDisclaimerDialog by remember { mutableStateOf(false) }
+            
+            // Check disclaimer acceptance on startup - show dialog first if not accepted
+            LaunchedEffect(disclaimerAccepted) {
+                if (!disclaimerAccepted) {
+                    showDisclaimerDialog = true
+                }
+            }
             
             // Check and request notification permission
             val notificationPermissionLauncher = rememberLauncherForActivityResult(
@@ -183,8 +194,10 @@ class MainActivity : ComponentActivity() {
                 }
             }
             
-            // Check notification permission on startup
-            LaunchedEffect(Unit) {
+            // Check notification permission on startup (only if disclaimer is accepted)
+            LaunchedEffect(disclaimerAccepted) {
+                if (!disclaimerAccepted) return@LaunchedEffect
+                
                 // Check POST_NOTIFICATIONS permission (Android 13+)
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                     val hasPermission = context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
@@ -237,7 +250,44 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    NavGraph(navController = navController)
+                    // Only show app content if disclaimer is accepted
+                    if (disclaimerAccepted) {
+                        NavGraph(navController = navController)
+                    }
+                }
+                
+                // Disclaimer Dialog - must be shown first and cannot be dismissed
+                if (showDisclaimerDialog) {
+                    AlertDialog(
+                        onDismissRequest = {
+                            // Cannot dismiss - user must accept or decline
+                        },
+                        title = { Text(stringResource(R.string.disclaimer_title)) },
+                        text = { Text(stringResource(R.string.disclaimer_message)) },
+                        confirmButton = {
+                            TextButton(
+                                onClick = {
+                                    showDisclaimerDialog = false
+                                    // Save acceptance
+                                    scope.launch {
+                                        preferencesManager.setDisclaimerAccepted(true)
+                                    }
+                                }
+                            ) {
+                                Text(stringResource(R.string.disclaimer_accept))
+                            }
+                        },
+                        dismissButton = {
+                            TextButton(
+                                onClick = {
+                                    // Close the app if user declines
+                                    finish()
+                                }
+                            ) {
+                                Text(stringResource(R.string.disclaimer_decline))
+                            }
+                        }
+                    )
                 }
                 
                 // DND Permission Dialog

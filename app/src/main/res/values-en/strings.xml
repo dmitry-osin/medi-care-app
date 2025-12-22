@@ -122,5 +122,11 @@
     <string name="battery_optimization_title">Battery Optimization</string>
     <string name="battery_optimization_message">For reminders to work correctly, you need to add the app to all battery optimization manager exclusions and allow background work.\n\nThis is a required condition for the app to work. Without this, notifications will not be received.\n\nIn addition to Android system settings, also check battery optimization managers from your device manufacturer (Samsung, Huawei, Honor, Xiaomi, and others).\n\nAfter opening the settings screen:\n1. Find Medicare in the app list\n2. Select \"Don\'t optimize\" or \"Not restricted\"\n3. Also check settings in the battery optimization manager from your device manufacturer</string>
     <string name="battery_optimization_continue">Continue</string>
+    
+    <!-- Disclaimer -->
+    <string name="disclaimer_title">Disclaimer</string>
+    <string name="disclaimer_message">This application is provided \"as is\" and makes no warranties regarding its operation.\n\nYou are fully responsible for your health and must independently monitor your medication intake. You are required to properly configure the application and ensure that notifications work correctly.\n\nIf for any reason the application does not send a notification (system failure, battery issues, incorrect configuration, etc.), this is not grounds for claims or lawsuits.\n\nBy using this application, you acknowledge that you understand and accept these terms.</string>
+    <string name="disclaimer_accept">Accept</string>
+    <string name="disclaimer_decline">Decline</string>
 </resources>
 

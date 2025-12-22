@@ -17,6 +17,7 @@ class PreferencesManager(private val context: Context) {
         private val LANGUAGE_KEY = stringPreferencesKey("language")
         private val THEME_KEY = stringPreferencesKey("theme")
         private val BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY = booleanPreferencesKey("battery_optimization_dialog_shown")
+        private val DISCLAIMER_ACCEPTED_KEY = booleanPreferencesKey("disclaimer_accepted")
         
         const val LANGUAGE_RU = "ru"
         const val LANGUAGE_EN = "en"
@@ -38,6 +39,10 @@ class PreferencesManager(private val context: Context) {
         preferences[BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY] ?: false
     }
 
+    val disclaimerAccepted: Flow<Boolean> = context.dataStore.data.map { preferences ->
+        preferences[DISCLAIMER_ACCEPTED_KEY] ?: false
+    }
+
     suspend fun setLanguage(language: String) {
         context.dataStore.edit { preferences ->
             preferences[LANGUAGE_KEY] = language
@@ -53,6 +58,12 @@ class PreferencesManager(private val context: Context) {
     suspend fun setBatteryOptimizationDialogShown(shown: Boolean) {
         context.dataStore.edit { preferences ->
             preferences[BATTERY_OPTIMIZATION_DIALOG_SHOWN_KEY] = shown
+        }
+    }
+
+    suspend fun setDisclaimerAccepted(accepted: Boolean) {
+        context.dataStore.edit { preferences ->
+            preferences[DISCLAIMER_ACCEPTED_KEY] = accepted
         }
     }
 }
