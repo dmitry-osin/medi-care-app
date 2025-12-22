@@ -3,6 +3,14 @@ plugins {
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.ksp)
+    alias(libs.plugins.okTracer)
+}
+
+tracer {
+    create("defaultConfig") {
+        pluginToken = "Fiq4wGndGzsrBkpqdzBSY7nvdKDotufd2McyF5QjwZz"
+        appToken = "jrTuLSS0wzS3W5h3vbOm6EDoyZbCH5RAgzj2XeSnYVh"
+    }
 }
 
 android {
@@ -71,6 +79,9 @@ dependencies {
 
     // DataStore
     implementation(libs.androidx.datastore.preferences)
+
+    implementation(platform(libs.tracer.platform))
+    implementation(libs.tracer.crash.report)
 
     // Testing
     testImplementation(libs.junit)

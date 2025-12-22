@@ -14,6 +14,7 @@ navigation = "2.8.4"
 workManager = "2.10.0"
 viewModelCompose = "2.10.0"
 dataStore = "1.1.1"
+tracerPlatform = "1.1.7"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -47,10 +48,13 @@ androidx-lifecycle-viewmodel-compose = { group = "androidx.lifecycle", name = "l
 
 # DataStore
 androidx-datastore-preferences = { group = "androidx.datastore", name = "datastore-preferences", version.ref = "dataStore" }
+tracer-crash-report = { module = "ru.ok.tracer:tracer-crash-report" }
+tracer-platform = { module = "ru.ok.tracer:tracer-platform", version.ref = "tracerPlatform" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+okTracer = { id = "ru.ok.tracer", version.ref = "tracerPlatform" }
 
