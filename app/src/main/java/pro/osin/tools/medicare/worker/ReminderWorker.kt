@@ -65,6 +65,10 @@ class ReminderWorker(
 
             return Result.success()
         } catch (e: Exception) {
+            // WorkManager will automatically retry with exponential backoff
+            // For non-critical errors, retry. For critical errors (like database issues),
+            // we could return Result.failure() to stop retries, but retry is safer for notifications
+            // WorkManager has built-in limits on retries (default is 10 attempts)
             return Result.retry()
         }
     }

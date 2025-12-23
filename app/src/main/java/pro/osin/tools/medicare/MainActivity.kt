@@ -32,12 +32,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.navigation.compose.rememberNavController
-import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
+import androidx.lifecycle.lifecycleScope
 import pro.osin.tools.medicare.R
 import pro.osin.tools.medicare.data.database.MedicineDatabase
 import pro.osin.tools.medicare.data.repository.MedicineRepository
@@ -81,9 +80,8 @@ class MainActivity : ComponentActivity() {
         ReminderScheduler.schedulePeriodicCheck(applicationContext)
         
         // Restore all active reminders on startup
-        // Use lifecycleScope or application scope to avoid memory leaks
-        val scope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
-        scope.launch {
+        // Use lifecycleScope to avoid memory leaks - it will be cancelled when activity is destroyed
+        lifecycleScope.launch(Dispatchers.IO) {
             try {
                 val reminders = reminderRepository.getAllActiveReminders().first()
                 reminders.forEach { reminder ->
@@ -93,8 +91,6 @@ class MainActivity : ComponentActivity() {
                 // Ignore errors during restoration
             }
         }
-        // Note: This scope is intentionally not cancelled as it's a one-time operation
-        // and should complete even if activity is destroyed
 
         setContent {
             val navController = rememberNavController()
@@ -110,11 +106,27 @@ class MainActivity : ComponentActivity() {
             
             // State for showing disclaimer dialog
             var showDisclaimerDialog by remember { mutableStateOf(false) }
+            // Track if we've already checked disclaimer in this session
+            var hasCheckedDisclaimer by remember { mutableStateOf(false) }
             
             // Check disclaimer acceptance on startup - show dialog first if not accepted
+            // Check only once when the composable is first created
+            LaunchedEffect(Unit) {
+                // Wait for DataStore to load the actual value (not just initial=false)
+                // collectAsState starts with initial=false, then loads real value from DataStore
+                kotlinx.coroutines.delay(200)
+                if (!hasCheckedDisclaimer) {
+                    hasCheckedDisclaimer = true
+                    if (!disclaimerAccepted) {
+                        showDisclaimerDialog = true
+                    }
+                }
+            }
+            
+            // Also hide dialog if user accepts while dialog is showing
             LaunchedEffect(disclaimerAccepted) {
-                if (!disclaimerAccepted) {
-                    showDisclaimerDialog = true
+                if (disclaimerAccepted && showDisclaimerDialog) {
+                    showDisclaimerDialog = false
                 }
             }
             
@@ -224,6 +236,7 @@ class MainActivity : ComponentActivity() {
                 checkBatteryOptimization()
                 
                 // Navigate to settings screen after restart
+                // Get intent extra value (read once to avoid issues with intent changes)
                 val navigateTo = intent.getStringExtra("navigate_to")
                 if (navigateTo != null) {
                     navController.navigate(navigateTo) {
@@ -267,11 +280,11 @@ class MainActivity : ComponentActivity() {
                         confirmButton = {
                             TextButton(
                                 onClick = {
-                                    showDisclaimerDialog = false
-                                    // Save acceptance
-                                    scope.launch {
+                                    // Save acceptance first, then hide dialog
+                                    scope.launch(Dispatchers.IO) {
                                         preferencesManager.setDisclaimerAccepted(true)
                                     }
+                                    showDisclaimerDialog = false
                                 }
                             ) {
                                 Text(stringResource(R.string.disclaimer_accept))

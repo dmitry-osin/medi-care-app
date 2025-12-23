@@ -1,6 +1,7 @@
 package pro.osin.tools.medicare.ui.screens.about
 
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.net.Uri
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -10,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Face
+import androidx.compose.material.icons.filled.Info
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -32,6 +34,16 @@ import pro.osin.tools.medicare.ui.components.BottomNavigationBar
 @Composable
 fun AboutScreen(navController: NavController) {
     val context = LocalContext.current
+    
+    // Get app version from package manager
+    val versionName = remember {
+        try {
+            val packageInfo = context.packageManager.getPackageInfo(context.packageName, 0)
+            packageInfo.versionName ?: "1.0"
+        } catch (e: PackageManager.NameNotFoundException) {
+            "1.0"
+        }
+    }
 
     Scaffold(
         topBar = {
@@ -72,7 +84,7 @@ fun AboutScreen(navController: NavController) {
             
             // Version
             Text(
-                text = "${stringResource(R.string.about_version)} 1.0",
+                text = "${stringResource(R.string.about_version)} $versionName",
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
@@ -98,11 +110,21 @@ fun AboutScreen(navController: NavController) {
                         verticalAlignment = Alignment.CenterVertically,
                         horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        Text(
-                            text = stringResource(R.string.about_author),
-                            style = MaterialTheme.typography.titleMedium,
-                            fontWeight = FontWeight.SemiBold
-                        )
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Face,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                            Text(
+                                text = stringResource(R.string.about_author),
+                                style = MaterialTheme.typography.titleMedium,
+                                fontWeight = FontWeight.SemiBold
+                            )
+                        }
                         Text(
                             text = stringResource(R.string.about_author_name),
                             style = MaterialTheme.typography.bodyLarge
@@ -151,12 +173,13 @@ fun AboutScreen(navController: NavController) {
                     Divider()
                     
                     // Website
-                    val websiteValue = stringResource(R.string.about_website_value)
+                    val websiteDisplay = stringResource(R.string.about_website_value) // Display: osin.pro/medicare
+                    val websiteUrl = stringResource(R.string.about_website_value) // Actual URL: osin.pro/medicare
                     Row(
                         modifier = Modifier
                             .fillMaxWidth()
                             .clickable {
-                                val url = "https://$websiteValue"
+                                val url = "http://$websiteUrl"
                                 val intent = Intent(Intent.ACTION_VIEW, url.toUri())
                                 context.startActivity(intent)
                             },
@@ -168,7 +191,7 @@ fun AboutScreen(navController: NavController) {
                             horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Icon(
-                                imageVector = Icons.Default.Face,
+                                imageVector = Icons.Default.Info,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.primary
                             )
@@ -179,7 +202,7 @@ fun AboutScreen(navController: NavController) {
                             )
                         }
                         Text(
-                            text = websiteValue,
+                            text = websiteDisplay,
                             style = MaterialTheme.typography.bodyLarge,
                             color = MaterialTheme.colorScheme.primary,
                             textDecoration = TextDecoration.Underline

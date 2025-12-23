@@ -51,9 +51,38 @@ fun HomeScreen(navController: NavController) {
     val medicineRepository = remember { MedicineRepository(database.medicineDao()) }
     val reminderRepository = remember { ReminderRepository(database.reminderDao(), context.applicationContext) }
 
-    // Cache calendar calculations - update when day changes
-    val currentDateKey = remember { 
+    // Update current time periodically (every minute)
+    val currentTimeStringState = remember { 
         val calendar = Calendar.getInstance()
+        val hour = calendar.get(Calendar.HOUR_OF_DAY)
+        val minute = calendar.get(Calendar.MINUTE)
+        mutableStateOf(String.format("%02d:%02d", hour, minute))
+    }
+    
+    // Cache calendar calculations - update when day changes
+    // Use current time as dependency to update when day changes
+    val currentTimeForDateKey = remember { 
+        mutableStateOf(System.currentTimeMillis())
+    }
+    
+    // Update date key when time updates (to catch day changes)
+    LaunchedEffect(currentTimeStringState.value) {
+        val currentMillis = System.currentTimeMillis()
+        val calendar = Calendar.getInstance().apply { timeInMillis = currentMillis }
+        val currentDay = calendar.get(Calendar.DAY_OF_MONTH)
+        
+        val previousCalendar = Calendar.getInstance().apply { timeInMillis = currentTimeForDateKey.value }
+        val previousDay = previousCalendar.get(Calendar.DAY_OF_MONTH)
+        
+        if (currentDay != previousDay) {
+            currentTimeForDateKey.value = currentMillis
+        }
+    }
+    
+    val currentDateKey = remember(currentTimeForDateKey.value) { 
+        val calendar = Calendar.getInstance().apply {
+            timeInMillis = currentTimeForDateKey.value
+        }
         calendar.get(Calendar.YEAR) * 10000 + 
         calendar.get(Calendar.MONTH) * 100 + 
         calendar.get(Calendar.DAY_OF_MONTH)
@@ -71,21 +100,18 @@ fun HomeScreen(navController: NavController) {
         Pair(todayIndex, tomorrowIndex)
     }
     
-    // Update current time periodically (every minute)
-    val currentTimeStringState = remember { 
-        val calendar = Calendar.getInstance()
-        val hour = calendar.get(Calendar.HOUR_OF_DAY)
-        val minute = calendar.get(Calendar.MINUTE)
-        mutableStateOf(String.format("%02d:%02d", hour, minute))
-    }
-    
     LaunchedEffect(Unit) {
-        while (true) {
-            kotlinx.coroutines.delay(60000) // Update every minute
-            val calendar = Calendar.getInstance()
-            val hour = calendar.get(Calendar.HOUR_OF_DAY)
-            val minute = calendar.get(Calendar.MINUTE)
-            currentTimeStringState.value = String.format("%02d:%02d", hour, minute)
+        try {
+            while (true) {
+                kotlinx.coroutines.delay(60000) // Update every minute
+                val calendar = Calendar.getInstance()
+                val hour = calendar.get(Calendar.HOUR_OF_DAY)
+                val minute = calendar.get(Calendar.MINUTE)
+                currentTimeStringState.value = String.format("%02d:%02d", hour, minute)
+            }
+        } catch (e: kotlinx.coroutines.CancellationException) {
+            // Normal cancellation when leaving composition
+            throw e
         }
     }
 
