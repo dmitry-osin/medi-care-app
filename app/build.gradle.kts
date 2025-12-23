@@ -80,6 +80,7 @@ dependencies {
     // DataStore
     implementation(libs.androidx.datastore.preferences)
 
+    // Tracer
     implementation(platform(libs.tracer.platform))
     implementation(libs.tracer.crash.report)
 
